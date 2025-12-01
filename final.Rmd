@@ -1,0 +1,85 @@
+---
+title: "DATASCI 306, Fall 2025, Final Group Project"
+author: "Group <num>: mention your group names here"
+output:
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+
+```
+
+Throughout this course, you've dedicated yourself to refining your analytical abilities using R programming language. These skills are highly coveted in today's job market!
+
+Now, for the semester project, you'll apply your learning to craft a compelling `Data Story` that can enrich your portfolio and impress prospective employers. Collaborating with a team (up to 5 members of your choosing), you'll construct a Data Story using the data provided in the `data` folder.
+This data is downloaded from: https://data.cdc.gov/browse?sortBy=relevance&pageSize=20&q=Adult+Tobacco+Consumption+In+The+U.S.%2C+2000-Present&page=1
+
+## Deliverable
+
+### 1.  Requirement-1 (4 pt)
+
+You should show at least 4 steps you adopt to clean and/or transform the dataset. Some of the steps you might take are; merging all the data into one dataframe, converting datatypes, creating additional columns, cleaning column names etc.
+f
+### 2. Requirement - 2 (20 pt)
+
+You need to plot 10 different diagrams to show correlations, frequencies, and/or relationships between various variables with plots of 5 different types (bar, line, heatmap, facet, etc.). Every plot should have a title and the x/y axis should have legible labels without any label overlaps for full credit. Provide a summary of your interpretations from the plots after each one. Each chart should be meaningful by itself.
+
+### 3. Requirement - 3 (5 pt)
+
+By this phase, you have a pretty good understanding of your data. Now, you will develop a predictive Machine Learning model to forecast a specified target outcome. For predictor selection, you must apply the feature selection techniques covered in Lectures 19 and 20. Provide a detailed justification for the final set of predictors chosen to receive full credit.
+
+Build an interactive shiny app that allows the user to select or input values and then make predictions using your model. You are required to build the shiny app just for the prediction section of your project. Although we will accept if you create a shiny app for your entire project (not required)
+
+### 4. Requirement - 4 (1 pt)
+
+You should have a conclusion, highlighting the main insights you were able to derive from your analysis. 
+
+This is an open ended project where every team will come up with their own unique insights. We would like to see what each team comes up with.
+
+## Submission
+
+* You will upload the zip file containing your final.Rmd, final.pdf files covering the EDA and app.R file for your shiny app, as a deliverable to Canvas
+
+* You will present your findings by creating a video of a maximum of 15 minutes duration, explaining the code and the workings of your project; all team members should explain their part in the project to receive credit. You will share the video URL on Canvas for credit.
+
+It is not necessary to prepare slides (if you do it doesn't hurt) for the presentation. You may speak by showing the diagrams and/or code from your laptop.  Every team member should explain their part in the project along with the insights they derived by explaining the charts and summaries for full credit to each member. An easy way to get this accomplished is to open a Zoom meeting and everyone take turns in explaining while you record the meeting. Add the URL of this recording to Canvas.
+
+Your project will be evaluated for its meaningful/insightful EDA and predictions.
+
+------------------------------------------------------------------
+
+## Hints
+
+Some answers you may try to find in this dataset could be:
+
+* Are smoking disparities related to income getting worse or better over time?
+* Which racial or ethnic group faces the greatest inequality in smoking rates compared to the majority population?
+* Do people with frequent mental distress have a much higher smoking disparity than people with disabilities?
+* Which 5 focus groups have the highest average disparity over the entire period?
+
+These questions could just get you started but as an analyst you should hone the skills of asking good questions and this project will get you that practice.
+
+
+## Machine Learning Model Development:
+
+You could build  a regression model to predict the DisparityValue. Features may include, Year, disparity category, specific focus group etc. Extract and plot the feature importance to select the features. 
+
+## Summary
+
+Your summary might answer questions like; 
+
+* What were the most significant trends and predictors of smoking disparity? 
+* Which populations should be prioritized for smoking cessation programs? etc.  
+You may also include ideas for future analysis and any limitations you came across with the current dataset
+
+```{r}
+library(readr)
+age <- read_csv("data/Age-Related_Disparities_in_Cigarette_Smoking_Among_Adults_20251101.csv")
+employment <- read_csv("data/Employment-Related_Disparities_in_Cigarette_Smoking_Among_Adults_20251101.csv")
+income <- read_csv("data/Income-Related_Disparities_in_Cigarette_Smoking_Among_Adults_20251101.csv")
+mental_health <- read_csv("data/Mental_Health-Related_Disparities_in_Cigarette_Smoking_Among_Adults_20251101.csv")
+race_and_ethnicity <- read_csv("data/Race_and_Ethnic_Disparities_in_Cigarette_Smoking_Among_Adults_20251101.csv")
+```
+
