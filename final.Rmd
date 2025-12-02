@@ -83,15 +83,19 @@ mental_health <- read_csv("data/Mental_Health-Related_Disparities_in_Cigarette_S
 race_and_ethnicity <- read_csv("data/Race_and_Ethnic_Disparities_in_Cigarette_Smoking_Among_Adults_20251101.csv")
 ```
 
+```{r}
+chr_to_dbl <- function(df) {
+  df <- df |> mutate(`Cigarette Use Prevalence % (Focus group)` = 
+                 as.numeric(`Cigarette Use Prevalence % (Focus group)`), 
+               `Cigarette Use Prevalence % (Reference group)` = 
+                 as.numeric(`Cigarette Use Prevalence % (Reference group)`), 
+               `Disparity Value` = as.numeric(`Disparity Value`))
+  df
+}
+```
 
 ```{r}
-#Convert column types from chr to dbl
-age <- age |> mutate(`Cigarette Use Prevalence % (Focus group)` = 
-                       as.numeric(`Cigarette Use Prevalence % (Focus group)`), 
-                     `Cigarette Use Prevalence % (Reference group)` = 
-                       as.numeric(`Cigarette Use Prevalence % (Reference group)`), 
-                     `Disparity Value` = as.numeric(`Disparity Value`))
-colnames(age)
+age <- chr_to_dbl(age)
 ```
 
 
@@ -103,5 +107,22 @@ age |> group_by(`To (Reference group)`, Year) |>
   ggplot(aes(x=Year, y=`Average Cigarette Use Prevalence %`, color=`To (Reference group)`)) +
   geom_line()+
   labs(color = "Age Group", title='Cigarette Use Prevalence Percentage Over Time')
+```
+
+```{r}
+#Convert column types from chr to dbl
+employment <- chr_to_dbl(employment)
+```
+
+
+```{r}
+employment |> group_by(`Comparing (Focus group)`, `To (Reference group)`) |> 
+  summarize(avg_disparity_value = mean(`Disparity Value`, na.rm=TRUE)) |>
+  mutate(grouped = paste(`Comparing (Focus group)`, `To (Reference group)`, sep = " vs. ")) |>
+  ggplot(aes(x=grouped, y=avg_disparity_value)) +
+  geom_col()+
+  theme(axis.text.x = element_text(angle = 45, hjust=1, vjust=1)) +
+  label()
+
 ```
 
