@@ -146,6 +146,11 @@ employment |> mutate(
   labs(title = "Employment Staus and Cigarette Use Over the Years", 
        x = "Year", y = "Cigarette Use Prevalance (%)", color = "Employment Status")
 
+## Looking at the graph, it's apparent that being employed or not being in the labor
+## force seem to have much lower cigarette use prevalence than compared to being
+## unemployed or unable to work. This relationship could be caused by many factors 
+## such as stress or even time. It also seems that there is a slight decline overall
+## in smoking prevalance as time progresses regardless of employment status.
 ```
 
 
