@@ -8,6 +8,7 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
+library(scales)
 
 ```
 
@@ -106,6 +107,7 @@ age |> group_by(`To (Reference group)`, Year) |>
               mean(`Cigarette Use Prevalence % (Reference group)`, na.rm=TRUE)) |>
   ggplot(aes(x=Year, y=`Average Cigarette Use Prevalence %`, color=`To (Reference group)`)) +
   geom_line()+
+  scale_x_continuous(breaks = pretty_breaks(n = 5)) +
   labs(color = "Age Group", title='Cigarette Use Prevalence Percentage Over Time')
 ```
 
@@ -120,9 +122,11 @@ employment |> group_by(`Comparing (Focus group)`, `To (Reference group)`) |>
   summarize(avg_disparity_value = mean(`Disparity Value`, na.rm=TRUE)) |>
   mutate(grouped = paste(`Comparing (Focus group)`, `To (Reference group)`, sep = " vs. ")) |>
   ggplot(aes(x=grouped, y=avg_disparity_value)) +
-  geom_col()+
-  theme(axis.text.x = element_text(angle = 45, hjust=1, vjust=1)) +
-  label()
+  geom_col(fill = "darkblue", size = 3)+
+  theme(axis.text.x = element_text(angle = 45, hjust=1, vjust=1, size=8), 
+        plot.margin = unit(c(0, 0, 0, 4), "cm")) + 
+  labs(x='Focus vs. Reference Groups', y='Disparity Value', 
+       title='Disparity Values Across Focus vs. Reference Group')
 
 ```
 
