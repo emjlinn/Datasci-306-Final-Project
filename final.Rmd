@@ -1,6 +1,6 @@
 ---
 title: "DATASCI 306, Fall 2025, Final Group Project"
-author: "Group <num>: mention your group names here"
+author: "Group <28>: mention your group names here"
 output:
   pdf_document: default
 ---
@@ -76,75 +76,178 @@ Your summary might answer questions like;
 You may also include ideas for future analysis and any limitations you came across with the current dataset
 
 ```{r}
-library(readr)
-age <- read_csv("data/Age-Related_Disparities_in_Cigarette_Smoking_Among_Adults_20251101.csv", show_col_types = FALSE)
-employment <- read_csv("data/Employment-Related_Disparities_in_Cigarette_Smoking_Among_Adults_20251101.csv", show_col_types = FALSE)
-income <- read_csv("data/Income-Related_Disparities_in_Cigarette_Smoking_Among_Adults_20251101.csv", show_col_types = FALSE)
-mental_health <- read_csv("data/Mental_Health-Related_Disparities_in_Cigarette_Smoking_Among_Adults_20251101.csv", show_col_types = FALSE)
-race_and_ethnicity <- read_csv("data/Race_and_Ethnic_Disparities_in_Cigarette_Smoking_Among_Adults_20251101.csv", show_col_types = FALSE)
-```
+# =====================================================================
+# Requirement 1: Data import, cleaning, and transformation
+# =====================================================================
 
-```{r}
-chr_to_dbl <- function(df) {
-  df <- df |> mutate(`Cigarette Use Prevalence % (Focus group)` = 
-                 as.numeric(`Cigarette Use Prevalence % (Focus group)`), 
-               `Cigarette Use Prevalence % (Reference group)` = 
-                 as.numeric(`Cigarette Use Prevalence % (Reference group)`), 
-               `Disparity Value` = as.numeric(`Disparity Value`))
-  df
-}
-```
+library(tidyverse)
 
-```{r}
-age <- chr_to_dbl(age)
-```
+#-----------------------------
+# STEP 1: Read and MERGE all 5 datasets into ONE data frame
+#-----------------------------
 
+data_dir <- "data"  # change this if your CSVs are somewhere else
+
+file_names <- c(
+  "Employment-Related_Disparities_in_Cigarette_Smoking_Among_Adults_20251101.csv",
+  "Income-Related_Disparities_in_Cigarette_Smoking_Among_Adults_20251101.csv",
+  "Age-Related_Disparities_in_Cigarette_Smoking_Among_Adults_20251101.csv",
+  "Race_and_Ethnic_Disparities_in_Cigarette_Smoking_Among_Adults_20251101.csv",
+  "Mental_Health-Related_Disparities_in_Cigarette_Smoking_Among_Adults_20251101.csv"
+)
+
+# keep the raw list in case you ever want to look at individual tables
+smoking_raw_list <- file_names |>
+  set_names() |>
+  map(\(fn) read_csv(file.path(data_dir, fn), show_col_types = FALSE))
+
+# one big raw data frame (row-bind all 5 sources)
+smoking_raw <- bind_rows(smoking_raw_list)
+
+#-----------------------------
+# STEP 2: Convert DATA TYPES to appropriate formats
+#-----------------------------
+
+smoking_typed <- smoking_raw |>
+  mutate(
+    Year = as.integer(Year),
+    State = as.factor(State),
+
+    # Clean prevalence columns before numeric conversion
+    focus_prev_pct = `Cigarette Use Prevalence % (Focus group)` |>
+      str_replace_all("%", "") |>
+      str_replace_all("[^0-9\\.]", "") |>      # remove non-numeric characters
+      na_if("") |>
+      as.numeric(),
+
+    reference_prev_pct = `Cigarette Use Prevalence % (Reference group)` |>
+      str_replace_all("%", "") |>
+      str_replace_all("[^0-9\\.]", "") |>
+      na_if("") |>
+      as.numeric(),
+
+    disparity_value = `Disparity Value` |>
+      str_replace_all("[^0-9\\.-]", "") |>     # allow negative numbers
+      na_if("") |>
+      as.numeric()
+  )
+
+#-----------------------------
+# STEP 3: Create CLEANER COLUMN NAMES / ALIASES
+#   (This keeps the original CDC column names AND adds easy ones)
+#-----------------------------
+
+smoking_named <- smoking_typed |>
+  rename(
+    focus_group        = `Comparing (Focus group)`,
+    reference_group    = `To (Reference group)`,
+    tobacco_use_type   = `Tobacco Use`,
+    disparity_category = Demographic
+  )
+
+#-----------------------------
+# STEP 4: Create ADDITIONAL COLUMNS and HANDLE MISSING VALUES
+#-----------------------------
+
+smoking_all <- smoking_named |>
+  # drop rows that don't have a disparity value
+  filter(!is.na(disparity_value)) |>
+  # direction of disparity (is the focus group worse off?)
+  mutate(
+    disparity_direction = case_when(
+      disparity_value > 0 ~ "Focus group worse",
+      disparity_value < 0 ~ "Focus group better",
+      TRUE                ~ "No difference"
+    ),
+    disparity_direction = factor(
+      disparity_direction,
+      levels = c("Focus group worse", "No difference", "Focus group better")
+    )
+  )
+
+# `smoking_all` is the main cleaned data set
+# You still keep `smoking_raw` and `smoking_raw_list` if other code needs them.
+
+```
 
 ```{r}
 #Find avg cigarette use prevalence according to the reference group
-age |> group_by(`To (Reference group)`, Year) |>
-  summarize(`Average Cigarette Use Prevalence %` = 
-              mean(`Cigarette Use Prevalence % (Reference group)`, na.rm=TRUE)) |>
-  ggplot(aes(x=Year, y=`Average Cigarette Use Prevalence %`, color=`To (Reference group)`)) +
-  geom_line()+
+library(scales)
+
+smoking_all |>
+  filter(disparity_category == "Age") |>
+  group_by(reference_group, Year) |>
+  summarize(
+    avg_reference_prev = mean(reference_prev_pct, na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  ggplot(aes(x = Year, y = avg_reference_prev, color = reference_group)) +
+  geom_line() +
   scale_x_continuous(breaks = pretty_breaks(n = 5)) +
-  labs(color = "Age Group", title='Cigarette Use Prevalence Percentage Over Time')
+  labs(
+    color = "Age Group",
+    y = "Average Cigarette Use Prevalence (%)",
+    title = "Cigarette Use Prevalence Percentage Over Time (Reference Groups)"
+  )
 ```
 
 ```{r}
-#Convert column types from chr to dbl
-employment <- chr_to_dbl(employment)
-```
-
-
-```{r}
-employment |> group_by(`Comparing (Focus group)`, `To (Reference group)`) |> 
-  summarize(avg_disparity_value = mean(`Disparity Value`, na.rm=TRUE)) |>
-  mutate(grouped = paste(`Comparing (Focus group)`, `To (Reference group)`, sep = " vs. ")) |>
-  ggplot(aes(x=grouped, y=avg_disparity_value)) +
-  geom_col(fill = "darkblue", size = 3)+
-  theme(axis.text.x = element_text(angle = 45, hjust=1, vjust=1, size=8), 
-        plot.margin = unit(c(0, 0, 0, 4), "cm")) + 
-  labs(x='Focus vs. Reference Groups', y='Disparity Value', 
-       title='Disparity Values Across Focus vs. Reference Group')
-
+smoking_all |>
+  filter(disparity_category == "Employment") |>
+  group_by(focus_group, reference_group) |>
+  summarize(
+    avg_disparity_value = mean(disparity_value, na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  mutate(grouped = paste(focus_group, reference_group, sep = " vs. ")) |>
+  ggplot(aes(x = grouped, y = avg_disparity_value)) +
+  geom_col(fill = "darkblue", width = 0.7) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, size = 8),
+    plot.margin = unit(c(0, 0, 0, 4), "cm")
+  ) +
+  labs(
+    x = "Focus vs. Reference Groups",
+    y = "Disparity Value",
+    title = "Disparity Values Across Employment Groups"
+  )
 ```
 
 ```{r}
 ## Does employment status have a relationship with cigarette use?
+smoking_all |>
+  filter(disparity_category == "Employment") |>
+  mutate(
+    employment_group = case_when(
+      focus_group == "Employed or Self" ~ "Employed",
+      focus_group == "Unemployed" ~ "Unemployed",
+      focus_group %in% c("Homemaker or Student", "Retired") ~
+        "Not in labor force (Homemaker / Student / Retired)",
+      focus_group == "Unable to work" ~ "Unable to work",
+      TRUE ~ NA_character_
+    )
+  ) |>
+  ggplot(aes(x = Year, y = focus_prev_pct, color = employment_group)) +
 
-employment |> mutate(
-  employment_group = case_when(
-      `Comparing (Focus group)` == "Employed or Self" ~ "Employed",
-      `Comparing (Focus group)` == "Unemployed" ~ "Unemployed",
-      `Comparing (Focus group)` %in% c("Homemaker or Student", 
-          "Retired") ~ "Not in labor force(Homemaker, Student, or Retired)",
-      `Comparing (Focus group)` == "Unable to work" ~ "Unable to work"), 
-  cig_prev = as.numeric(`Cigarette Use Prevalence % (Focus group)`)) |> 
-  ggplot(aes(x = Year, y = cig_prev, color = employment_group)) + 
-  geom_point(position = "jitter", alpha = 0.5, na.rm = TRUE) + 
-  labs(title = "Employment Staus and Cigarette Use Over the Years", 
-       x = "Year", y = "Cigarette Use Prevalance (%)", color = "Employment Status")
+  # Trend lines to show actual patterns
+  geom_smooth(se = FALSE, linewidth = 1.3) +
+
+  # Lighter, smaller points for context
+  geom_point(alpha = 0.15, size = 1.2, position = position_jitter(width = 0.2, height = 0)) +
+
+  labs(
+    title = "Employment Status and Cigarette Use Over the Years",
+    x = "Year",
+    y = "Cigarette Use Prevalence (%)",
+    color = "Employment Status"
+  ) +
+
+  theme_minimal(base_size = 14) +
+  theme(
+    legend.position = "right",
+    plot.title = element_text(size = 18, face = "bold"),
+    legend.title = element_text(face = "bold")
+  )
 
 ## Looking at the graph, it's apparent that being employed or not being in the labor
 ## force seem to have much lower cigarette use prevalence than compared to being
