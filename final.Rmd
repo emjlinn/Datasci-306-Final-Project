@@ -83,3 +83,13 @@ mental_health <- read_csv("data/Mental_Health-Related_Disparities_in_Cigarette_S
 race_and_ethnicity <- read_csv("data/Race_and_Ethnic_Disparities_in_Cigarette_Smoking_Among_Adults_20251101.csv")
 ```
 
+
+```{r}
+age <- age |> mutate(`Cigarette Use Prevalence % (Focus group)` = 
+                       as.numeric(`Cigarette Use Prevalence % (Focus group)`)) |> 
+  mutate(`Cigarette Use Prevalence % (Reference group)` = 
+           as.numeric(`Cigarette Use Prevalence % (Reference group)`)) |> 
+  mutate(`Disparity Value` = as.numeric(`Disparity Value`))
+age
+```
+
