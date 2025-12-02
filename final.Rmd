@@ -85,11 +85,23 @@ race_and_ethnicity <- read_csv("data/Race_and_Ethnic_Disparities_in_Cigarette_Sm
 
 
 ```{r}
+#Convert column types from chr to dbl
 age <- age |> mutate(`Cigarette Use Prevalence % (Focus group)` = 
-                       as.numeric(`Cigarette Use Prevalence % (Focus group)`)) |> 
-  mutate(`Cigarette Use Prevalence % (Reference group)` = 
-           as.numeric(`Cigarette Use Prevalence % (Reference group)`)) |> 
-  mutate(`Disparity Value` = as.numeric(`Disparity Value`))
-age
+                       as.numeric(`Cigarette Use Prevalence % (Focus group)`), 
+                     `Cigarette Use Prevalence % (Reference group)` = 
+                       as.numeric(`Cigarette Use Prevalence % (Reference group)`), 
+                     `Disparity Value` = as.numeric(`Disparity Value`))
+colnames(age)
+```
+
+
+```{r}
+#Find avg cigarette use prevalence according to the reference group
+age |> group_by(`To (Reference group)`, Year) |>
+  summarize(`Average Cigarette Use Prevalence %` = 
+              mean(`Cigarette Use Prevalence % (Reference group)`, na.rm=TRUE)) |>
+  ggplot(aes(x=Year, y=`Average Cigarette Use Prevalence %`, color=`To (Reference group)`)) +
+  geom_line()+
+  labs(color = "Age Group", title='Cigarette Use Prevalence Percentage Over Time')
 ```
 
