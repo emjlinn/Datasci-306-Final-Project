@@ -76,11 +76,11 @@ You may also include ideas for future analysis and any limitations you came acro
 
 ```{r}
 library(readr)
-age <- read_csv("data/Age-Related_Disparities_in_Cigarette_Smoking_Among_Adults_20251101.csv")
-employment <- read_csv("data/Employment-Related_Disparities_in_Cigarette_Smoking_Among_Adults_20251101.csv")
-income <- read_csv("data/Income-Related_Disparities_in_Cigarette_Smoking_Among_Adults_20251101.csv")
-mental_health <- read_csv("data/Mental_Health-Related_Disparities_in_Cigarette_Smoking_Among_Adults_20251101.csv")
-race_and_ethnicity <- read_csv("data/Race_and_Ethnic_Disparities_in_Cigarette_Smoking_Among_Adults_20251101.csv")
+age <- read_csv("data/Age-Related_Disparities_in_Cigarette_Smoking_Among_Adults_20251101.csv", show_col_types = FALSE)
+employment <- read_csv("data/Employment-Related_Disparities_in_Cigarette_Smoking_Among_Adults_20251101.csv", show_col_types = FALSE)
+income <- read_csv("data/Income-Related_Disparities_in_Cigarette_Smoking_Among_Adults_20251101.csv", show_col_types = FALSE)
+mental_health <- read_csv("data/Mental_Health-Related_Disparities_in_Cigarette_Smoking_Among_Adults_20251101.csv", show_col_types = FALSE)
+race_and_ethnicity <- read_csv("data/Race_and_Ethnic_Disparities_in_Cigarette_Smoking_Among_Adults_20251101.csv", show_col_types = FALSE)
 ```
 
 ```{r}
@@ -125,4 +125,23 @@ employment |> group_by(`Comparing (Focus group)`, `To (Reference group)`) |>
   label()
 
 ```
+
+```{r}
+## Does employment status have a relationship with cigarette use?
+
+employment |> mutate(
+  employment_group = case_when(
+      `Comparing (Focus group)` == "Employed or Self" ~ "Employed",
+      `Comparing (Focus group)` == "Unemployed" ~ "Unemployed",
+      `Comparing (Focus group)` %in% c("Homemaker or Student", 
+          "Retired") ~ "Not in labor force(Homemaker, Student, or Retired)",
+      `Comparing (Focus group)` == "Unable to work" ~ "Unable to work"), 
+  cig_prev = as.numeric(`Cigarette Use Prevalence % (Focus group)`)) |> 
+  ggplot(aes(x = Year, y = cig_prev, color = employment_group)) + 
+  geom_point(position = "jitter", alpha = 0.5, na.rm = TRUE) + 
+  labs(title = "Employment Staus and Cigarette Use Over the Years", 
+       x = "Year", y = "Cigarette Use Prevalance (%)", color = "Employment Status")
+
+```
+
 
