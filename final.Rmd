@@ -229,6 +229,38 @@ smoking_all |>
 ```
 
 ```{r}
+smoking_all |>
+  filter(disparity_category == "Employment") |>
+  mutate(focus_working_group = fct_collapse(focus_group,
+                                            employed = c("Employed or Self"),
+                                            working_age_not_employed = c("Unable to work", "Unemployed"),
+                                            non_labor_force = c("Retired", "Homemaker or Student"))) |>
+  mutate(reference_working_group = fct_collapse(reference_group,
+                                            employed = c("Employed or Self"),
+                                            working_age_not_employed = c("Unable to work", "Unemployed"),
+                                            non_labor_force = c("Retired", "Homemaker or Student"))) |>
+  group_by(focus_working_group, reference_working_group) |>
+  summarize(
+    avg_disparity_value = mean(disparity_value, na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  mutate(grouped = paste(focus_working_group, reference_working_group, sep = " vs. ")) |>
+  ggplot(aes(x = grouped, y = avg_disparity_value)) +
+  geom_col(fill = "darkblue", width = 0.7) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, size = 8),
+    plot.margin = unit(c(0, 0, 0, 4), "cm")
+  ) +
+  labs(
+    x = "Focus vs. Reference Groups",
+    y = "Disparity Value",
+    title = "Disparity Values Across Employment Groups"
+  )
+
+```
+
+
+```{r}
 ## Does employment status have a relationship with cigarette use?
 smoking_all |>
   filter(disparity_category == "Employment") |>
