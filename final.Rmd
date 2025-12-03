@@ -466,3 +466,56 @@ geom_smooth(se = FALSE, linewidth = 1) +
 # Mental-health-related smoking disparities are not dramatically worsening over time. For people with mild mental distress, disparities actually decrease, and for those with severe distress, they remain high but show a slight downward trend after the mid-2010s. However, severe distress remains associated with the largest and most persistent smoking disparities, so this population still faces a much heavier burden than those with no or mild distress.
 
 ```
+```{r}
+## Which factors are most strongly associated with smoking?
+
+# Boxplot of focus group smoking prevalence by disparity category
+
+smoking_all |>
+filter(!is.na(focus_prev_pct)) |>
+ggplot(aes(x = disparity_category, y = focus_prev_pct)) +
+geom_boxplot(outlier.alpha = 0.3) +
+coord_flip() +  # flip for more readable labels
+labs(
+title = "Distribution of Smoking Prevalence by Disparity Category",
+x = "Disparity Category",
+y = "Cigarette Use Prevalence (%)"
+) +
+theme_minimal(base_size = 13) +
+theme(
+plot.title = element_text(face = "bold"),
+axis.title.y = element_text(face = "bold"),
+axis.title.x = element_text(face = "bold")
+)
+
+#line graph
+
+library(scales)
+
+category_time_trends <- smoking_all |>
+filter(!is.na(focus_prev_pct)) |>
+group_by(Year, disparity_category) |>
+summarize(
+avg_focus_prev = mean(focus_prev_pct, na.rm = TRUE),
+.groups = "drop"
+)
+
+ggplot(category_time_trends,
+aes(x = Year, y = avg_focus_prev, color = disparity_category)) +
+geom_line(linewidth = 1) +
+geom_point(size = 1.8) +
+scale_x_continuous(breaks = pretty_breaks(n = 6)) +
+labs(
+title = "Average Smoking Prevalence Over Time by Disparity Category",
+x = "Year",
+y = "Average Cigarette Use Prevalence (%)",
+color = "Disparity Category"
+) +
+theme_minimal(base_size = 13) +
+theme(
+plot.title = element_text(face = "bold"),
+legend.position = "bottom"
+)
+
+
+```
