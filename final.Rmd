@@ -426,3 +426,43 @@ smoking_2023 |>
 ## financial stress, causing people to look for an outlet through smoking.
 ```
 
+```{r}
+# Are smoking disparities related to mental health/age/etc. getting worse over time?
+
+# Mental health disparities over time: scatter + trend
+
+mental_health_trends <- smoking_all |>
+  filter(disparity_category == "Mental Health") |>
+  group_by(Year, focus_group) |>
+  summarize(
+  avg_disparity = mean(disparity_value, na.rm = TRUE),
+  .groups = "drop"
+  )
+
+ggplot(mental_health_trends,
+  aes(x = Year, y = avg_disparity, color = focus_group)) +
+
+# scatter points
+
+  geom_point(alpha = 0.6, size = 2) +
+
+# smooth trend lines to see direction clearly
+
+geom_smooth(se = FALSE, linewidth = 1) +
+  labs(
+  title = "Mental-Health-Related Smoking Disparities Over Time",
+  subtitle = "Average disparity value between focus and reference groups by year",
+  x = "Year",
+  y = "Average Disparity Value",
+  color = "Mental Health Group"
+  ) +
+  scale_x_continuous(breaks = pretty_breaks(n = 6)) +
+  theme_minimal(base_size = 13) +
+  theme(
+  plot.title = element_text(face = "bold"),
+  legend.position = "bottom"
+  )
+
+# Mental-health-related smoking disparities are not dramatically worsening over time. For people with mild mental distress, disparities actually decrease, and for those with severe distress, they remain high but show a slight downward trend after the mid-2010s. However, severe distress remains associated with the largest and most persistent smoking disparities, so this population still faces a much heavier burden than those with no or mild distress.
+
+```
