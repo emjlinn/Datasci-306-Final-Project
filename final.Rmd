@@ -211,6 +211,10 @@ smoking_all |>
     y = "Disparity Value",
     title = "Disparity Values Across Employment Groups"
   )
+
+#Looking at the below graph, it appears that disparity values are highest between those who are unable to work and retirees, unable to work and homemakers/students, unemployed and homemakers/students, and unemployed and retirees. The disparity values between each of these groups is over 2.5, showing a notable difference from the smaller differences between other groups. Each of these categories can be split into two groups: those who are of working age but are not (unemployed/unable to work) and those who are not in the workforce but have been or will be (students/retirees)
+
+#Second graph with categories (those who don't work vs. those who have/will work)
 ```
 
 ```{r}
