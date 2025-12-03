@@ -1,6 +1,6 @@
 ---
 title: "DATASCI 306, Fall 2025, Final Group Project"
-author: "Group <28>: mention your group names here"
+author: "Group <28>: Anthony Nguyen, Emily Lin, Eva Naberhaus, Margaret Wozniak, Sreyashi Mondal"
 output:
   pdf_document: default
 ---
@@ -256,4 +256,124 @@ smoking_all |>
 ## in smoking prevalance as time progresses regardless of employment status.
 ```
 
+```{r}
+# Geographic heatmaps for each disparity category
+library(maps)
+library(viridis)
+
+# Get U.S. polygon map
+us_map <- map_data("state")
+
+# Standardize state names to uniformly lowercase
+smoking_all_states <- smoking_all |>
+  mutate(State_full = tolower(State))
+
+categories <- c("Employment", "Age", "Race and Ethnicity", 
+                "Income", "Mental Health")
+
+# for each category, make map 
+for (cat in categories) {
+  
+  # Summarize average disparity by state for that category
+  df_cat <- smoking_all_states |>
+    filter(disparity_category == cat) |>
+    group_by(State_full) |>
+    summarize(
+      avg_disparity = mean(disparity_value, na.rm = TRUE),
+      .groups = "drop"
+    )
+  
+  # Join with map polygons
+  df_map <- us_map |>
+    left_join(df_cat, by = c("region" = "State_full"))
+  
+  # Create heatmap
+  p <- ggplot(df_map, aes(long, lat, group = group, fill = avg_disparity)) +
+    geom_polygon(color = "white", linewidth = 0.3) +
+    coord_fixed(1.3) +
+    scale_fill_viridis(
+      option = "mako",
+      direction = -1,
+      na.value = "grey80",
+      name = "Avg Disparity"
+    ) +
+    labs(
+      title = paste("Smoking Disparity by State:", cat),
+      subtitle = "Average Disparity Value (Focus/Reference)",
+      caption = "Higher values = worse disparities for the focus group"
+    ) +
+    theme_void(base_size = 14) +
+    theme(
+      plot.title = element_text(face = "bold", size = 18),
+      plot.subtitle = element_text(size = 12),
+      legend.position = "right"
+    )
+  
+  print(p)
+}
+
+# Overall Absolute Disparity Score by State
+
+# Average disparity by state/category
+state_cat_abs <- smoking_all_states |>
+  group_by(State_full, disparity_category) |>
+  summarize(
+    avg_abs_disparity = mean(abs(disparity_value), na.rm = TRUE),
+    .groups = "drop"
+  )
+
+#Average across the 5 categories (overall score)
+state_overall <- state_cat_abs |>
+  group_by(State_full) |>
+  summarize(
+    overall_abs_disparity = mean(avg_abs_disparity, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# Join with map polygons 
+map_overall <- us_map |>
+  left_join(state_overall, by = c("region" = "State_full"))
+
+# plot
+ggplot(map_overall, aes(long, lat, group = group, fill = overall_abs_disparity)) +
+  geom_polygon(color = "white", linewidth = 0.3) +
+  coord_fixed(1.3) +
+  scale_fill_viridis(
+    option = "mako",
+    direction = -1,
+    name = "Overall\nAbsolute\nDisparity",
+    na.value = "grey85"
+  ) +
+  labs(
+    title = "Overall Absolute Smoking Disparity by State",
+    subtitle = "Average of Absolute Disparities Across All Five Categories",
+    caption = "Higher values indicate larger overall inequalities"
+  ) +
+  theme_void(base_size = 14) +
+  theme(
+    plot.title = element_text(size = 20, face = "bold"),
+    plot.subtitle = element_text(size = 12)
+  )
+
+
+## Summary of Interpretations
+
+## Employment: 
+## Looking at the graph generated for the employment category, we immediately notice the outlier of Utah. Utah has a much higher disparity rate than every other state in the country, with an average disparity of roughly 1.8. Additionally, we notice that most states in the south have a lower disparity on average compared to states in other regions of the US. 
+
+## Age:
+## The graph for age shows a much more even distribution of disparity throughout the US. However, we do still see some concentration of high disparities on the east side of the country, with Michigan, Maine, and West Virginia showing the highest average disparities of roughly 1.30. Importantly, the range of average disparity for age is smaller than the range for employment, with the range ending where the employment range started. This suggests that there is less of a disparity between age groups than there is between employment groups, meaning someones employment status is more likely to make them a smoker than their age is. 
+
+##Race and Ethnicity:
+## The graph for race and ethnicity shows little to no geographic trends for smoking disparity by region. However, the map is generally on the darker side, with the darkest states being Minnesota, South Dakota, Vermont, Maryland, and Oregon.
+
+##Income:
+## The graph for income shows little to no geographic trends for smoking disparity by region. The darkest states are Idaho, Vermont, Maine, Montana, and Utah. Importantly, this graph is very similar to the employment graph in terms of where relatively darker states are located, highlighting the correlation between employment status and income. 
+
+##Mental Health:
+## The graph for mental health shows little to no geographic trends for smoking disparity by region, but is darker on average. The darkest states are Utah, New Hampshire, Massachusetts, and Connecticut. The color distribution of this graph again aligns with the employment and income graphs, suggesting that there is an intersection between focus groups within the employment, income, and mental health groups. Additionally, the range of these three graphs  suggest that the focus groups in these categories tend to do much worse than the focus groups in other categories. 
+
+##Absolute Smoking Disparity by State:
+## This graph shows that for all states, the focus group has a higher cigarette use percentage than the reference group does. This is shown in the range, which is strictly greater than 1. Additionally, this graph shows that Utah and Vermont contain the most disparity, while Alabama, Nevada, and Arizona contain the least. 
+```
 
