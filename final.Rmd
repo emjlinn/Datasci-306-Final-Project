@@ -517,5 +517,7 @@ plot.title = element_text(face = "bold"),
 legend.position = "bottom"
 )
 
+#The boxplot shows that smoking prevalence is lowest for age-based groups and substantially higher for groups defined by employment, income, mental health, and race/ethnicity. In particular, income-, race/ethnicity-, and mental-health-based focus groups have both higher medians and many very high-prevalence observations, suggesting these factors are more strongly associated with cigarette use than age alone.
+#The time-series plot confirms that all factor groups experience a gradual decline in smoking prevalence over time, but the ordering of categories is consistent. Income-related focus groups almost always have the highest average smoking prevalence, followed by employment- and mental-health-related groups. Race/ethnicity sits in the middle, while age-based groups have the lowest prevalence throughout. This pattern suggests that socioeconomic factors (especially income and employment) and mental health carry the most “weight” in determining whether someone is a smoker in this dataset, whereas age differences, while present, are comparatively weaker.
 
 ```
