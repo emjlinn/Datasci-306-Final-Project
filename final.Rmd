@@ -564,3 +564,52 @@ legend.position = "bottom"
 #The time-series plot confirms that all factor groups experience a gradual decline in smoking prevalence over time, but the ordering of categories is consistent. Income-related focus groups almost always have the highest average smoking prevalence, followed by employment- and mental-health-related groups. Race/ethnicity sits in the middle, while age-based groups have the lowest prevalence throughout. This pattern suggests that socioeconomic factors (especially income and employment) and mental health carry the most “weight” in determining whether someone is a smoker in this dataset, whereas age differences, while present, are comparatively weaker.
 
 ```
+#Correlation matrix heatmap between disparity categories
+#reshape to wide
+wide_disparities <- smoking_all |>
+  group_by(State, disparity_category) |>
+  summarize(
+    avg_disparity = mean(disparity_value, na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  pivot_wider(
+    names_from = disparity_category,
+    values_from = avg_disparity
+  ) |>
+  janitor::clean_names()
+
+
+#correlation matrix
+corr_matrix <- wide_disparities |>
+  select(-state) |>
+  cor(use = "pairwise.complete.obs")
+
+
+#matrix to long
+corr_long <- corr_matrix |>
+  as.data.frame() |>
+  rownames_to_column("Var1") |>
+  pivot_longer(
+    cols = -Var1,
+    names_to = "Var2",
+    values_to = "Correlation"
+  )
+
+
+
+ggplot(corr_long, aes(x = Var1, y = Var2, fill = Correlation)) +
+  geom_tile() +
+  scale_fill_viridis_c() +
+  labs(
+    title = "Correlation Heatmap of Disparity Categories",
+    x = "",
+    y = "",
+    fill = "Correlation"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, face = "bold"),
+    axis.text.y = element_text(face = "bold")
+  )
+
+```
