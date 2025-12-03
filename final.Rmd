@@ -253,7 +253,7 @@ smoking_all |>
 ## force seem to have much lower cigarette use prevalence than compared to being
 ## unemployed or unable to work. This relationship could be caused by many factors 
 ## such as stress or even time. It also seems that there is a slight decline overall
-## in smoking prevalance as time progresses regardless of employment status.
+## in smoking prevalence as time progresses regardless of employment status.
 ```
 
 ```{r}
@@ -375,5 +375,50 @@ ggplot(map_overall, aes(long, lat, group = group, fill = overall_abs_disparity))
 
 ##Absolute Smoking Disparity by State:
 ## This graph shows that for all states, the focus group has a higher cigarette use percentage than the reference group does. This is shown in the range, which is strictly greater than 1. Additionally, this graph shows that Utah and Vermont contain the most disparity, while Alabama, Nevada, and Arizona contain the least. 
+```
+
+```{r}
+## Which intersections of demographic factors show the highest disparities in 
+## cigarette use in 2023? 
+
+smoking_2023 <- smoking_all |> filter(Year == 2023) |> group_by(disparity_category, focus_group) |> summarise(
+    Avg_Focus_Prevalence = mean(focus_prev_pct, na.rm = TRUE),
+    .groups = 'drop'
+  ) |> filter(!is.na(Avg_Focus_Prevalence))
+
+smoking_2023 |> 
+  ggplot(aes(x = reorder(focus_group, Avg_Focus_Prevalence),  
+             y = Avg_Focus_Prevalence,  
+             fill = disparity_category)) +                 
+  
+  geom_col(show.legend = FALSE) +
+  # faceting plots by the major demographic factor
+  facet_wrap(~ disparity_category, scales = "free_x", ncol = 3) +       
+  # show value on bar
+  geom_text(aes(label = round(Avg_Focus_Prevalence, 1)),  
+            vjust = -0.5, size = 3.5) +
+
+  labs(
+    title = "Smoking Prevalence in Demographic Groups in 2023",
+    subtitle = "Average prevalence across the US for subgroups identified as focus groups.",
+    x = "Focus Demographic Group",
+    y = "Average Smoking Prevalence (%)",
+    fill = "Demographic Factor"
+  ) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.65))) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),  
+    plot.title.position = "plot",
+    strip.text = element_text(face = "bold", size = 10)
+  )
+
+## From the graph, it appears that the highest average prevalence in smoking in
+## 2023 was seen in the employment and income groups. With employment have a large
+## smoking prevalence in the "Unable to work" category, and the income group having 
+## a large smoking prevalence in the "Less than $20,000 group". It seems that both
+## these factors are related to socioeconomic and health related factors. Not being
+## able to work and being low income can both cause large amounts of physical and 
+## financial stress, causing people to look for an outlet through smoking.
 ```
 
