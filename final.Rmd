@@ -81,6 +81,9 @@ You may also include ideas for future analysis and any limitations you came acro
 # =====================================================================
 
 library(tidyverse)
+library(purrr)
+library(dplyr)
+library(readr)
 
 #-----------------------------
 # STEP 1: Read and MERGE all 5 datasets into ONE data frame
@@ -96,13 +99,21 @@ file_names <- c(
   "Mental_Health-Related_Disparities_in_Cigarette_Smoking_Among_Adults_20251101.csv"
 )
 
-# keep the raw list in case you ever want to look at individual tables
-smoking_raw_list <- file_names |>
-  set_names() |>
-  map(\(fn) read_csv(file.path(data_dir, fn), show_col_types = FALSE))
+# build full paths explicitly
+full_paths <- base::file.path(data_dir, file_names)
+
+# read each file with the *readr* version of read_csv
+smoking_raw_list <- purrr::map(
+  full_paths,
+  ~ readr::read_csv(.x, show_col_types = FALSE)
+)
+
+# name the list elements with the original file names
+names(smoking_raw_list) <- file_names
 
 # one big raw data frame (row-bind all 5 sources)
-smoking_raw <- bind_rows(smoking_raw_list)
+smoking_raw <- dplyr::bind_rows(smoking_raw_list)
+
 
 #-----------------------------
 # STEP 2: Convert DATA TYPES to appropriate formats
