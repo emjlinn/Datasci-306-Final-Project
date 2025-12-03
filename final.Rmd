@@ -585,3 +585,10 @@ ggplot(corr_long, aes(x = Var1, y = Var2, fill = Correlation)) +
   )
 
 ```
+
+```{r}
+#Is there a relationship between cigarette use prevalence, age, and mental_health status?
+
+
+```
+
