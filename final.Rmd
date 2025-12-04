@@ -200,6 +200,8 @@ smoking_all |>
     y = "Average Cigarette Use Prevalence (%)",
     title = "Cigarette Use Prevalence Percentage Over Time (Reference Groups)"
   )
+
+#This graph highlights the differences in cigarette use prevalence over different age groups. For every group other than ages 65 and older, cigarette use decreased significantly from 2011-2023. Specifically, it decreased most sharply for those ages 18-24, with the trend becoming less steep for each increasing age group. Although age 65 and older had a low rate to begin with, their cigarette use prevalence appeared to stay level around8% throughout the entire time period covered. These trends suggests that overall, cigarette use prevalence is decreasing each year, and the younger the age group, the larger decrease we can expect.
 ```
 
 ```{r}
@@ -223,9 +225,8 @@ smoking_all |>
     title = "Disparity Values Across Employment Groups"
   )
 
-#Looking at the below graph, it appears that disparity values are highest between those who are unable to work and retirees, unable to work and homemakers/students, unemployed and homemakers/students, and unemployed and retirees. The disparity values between each of these groups is over 2.5, showing a notable difference from the smaller differences between other groups. Each of these categories can be split into two groups: those who are of working age but are not (unemployed/unable to work) and those who are not in the workforce but have been or will be (students/retirees)
+#Looking at the below graph, it appears that disparity values are highest between those who are unable to work and retirees, unable to work and homemakers/students, unemployed and homemakers/students, and unemployed and retirees. The disparity values between each of these groups is over 2.5, showing a notable difference from the smaller differences between other groups. Each of these categories can be split into two groups: those who are of working age but are not (unemployed/unable to work) and those who are not in the workforce but have been or will be (students/retirees), showing that these two groups have the largest disparity between them.
 
-#Second graph with categories (those who don't work vs. those who have/will work)
 ```
 
 
@@ -589,13 +590,18 @@ ggplot(corr_long, aes(x = Var1, y = Var2, fill = Correlation)) +
 ```{r}
 
 #Is there a relationship between cigarette use prevalence, mental health status, and employment status?
-smoking_all |> filter(disparity_category=="Mental Health" | disparity_category=="Employment") |> 
+smoking_all |> filter(disparity_category=="Mental Health" | disparity_category=="Income") |> 
   group_by(disparity_category, focus_group, Year) |>
   summarize(avg_prevalence = mean(focus_prev_pct)) |>
   ggplot(aes(x=Year, y=avg_prevalence, color=focus_group, linetype=disparity_category)) +
   geom_line() +
-  geom_point()
-  labs(x="Year", y="Average Prevalence (%)", color="Focus Group")
+  geom_point() +
+  scale_x_continuous(breaks = pretty_breaks(n = 5)) +
+  labs(x="Year", y="Average Prevalence (%)", color="Focus Group", linetype="Disparity Category", 
+       title='Cigarette Use Prevalence Over Time by Income and Mental Health Status')
 
+#Based on the line chart below, we can see that while cigarette use prevalence has decreased over time for both disparity categories of income and mental health, income-related groups have a spike in usage from 2013-2018, while mental health-related groups do not see that same trend. This suggests that there may be an extraneous variable related to income not present in the data.
+
+#We can see similarities between different focus groups across disparity categories. Those who have severe mental distress appear to have the most similar levels of cigarette use as those who make less than $20,000 a year. Those who make $20,000-$74,999 a year appear in the middle, and those who make $75,000 a year or above are closest to  those with mild or no mental distress. This suggests that there is a correlation between having more mental distress and making less money per year. Likely, this correlation is due to a third factor that affects both income and mental health status, such as a changing socioeconomic environment.
 ```
 
