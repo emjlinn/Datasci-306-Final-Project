@@ -587,11 +587,15 @@ ggplot(corr_long, aes(x = Var1, y = Var2, fill = Correlation)) +
 ```
 
 ```{r}
-#Is there a relationship between cigarette use prevalence, year, and mental health status?
-smoking_all |> filter(disparity_category=="Mental Health") |> group_by(focus_group, Year) |>
+
+#Is there a relationship between cigarette use prevalence, mental health status, and employment status?
+smoking_all |> filter(disparity_category=="Mental Health" | disparity_category=="Employment") |> 
+  group_by(disparity_category, focus_group, Year) |>
   summarize(avg_prevalence = mean(focus_prev_pct)) |>
-  ggplot(aes(x=Year, y=avg_prevalence, color=focus_group)) + 
-  geom_line()
+  ggplot(aes(x=Year, y=avg_prevalence, color=focus_group, linetype=disparity_category)) +
+  geom_line() +
+  geom_point()
+  labs(x="Year", y="Average Prevalence (%)", color="Focus Group")
 
 ```
 
