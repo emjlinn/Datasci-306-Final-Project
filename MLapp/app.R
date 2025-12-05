@@ -7,9 +7,12 @@
 #    https://shiny.posit.co/
 #
 
+
 install.packages("fastmap")
 
 install.packages(shiny)
+
+# make sure to install: install.packages("shiny")
 library(shiny)
 
 # Define UI for application that draws a histogram
