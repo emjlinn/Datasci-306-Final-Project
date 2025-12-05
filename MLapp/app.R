@@ -1,11 +1,6 @@
 library(shiny)
 library(dplyr)
 
-### ---- PREPARE DATA & MODEL ----
-
-# Model: Predict prevalence (%) by Year + Age reference group
-
-# Assuming smoking_all is already loaded in the environment
 
 model_data <- smoking_all %>%
   filter(disparity_category == "Age") %>%
