@@ -7,15 +7,11 @@
 #    https://shiny.posit.co/
 #
 
-
-install.packages("fastmap")
-
-install.packages(shiny)
-
 # make sure to install: install.packages("shiny")
 
 library(shiny)
 library(dplyr)
+library(tidyr)
 
 ### ---- PREPARE DATA & MODEL ----
 # Assuming smoking_all is already loaded in the environment
