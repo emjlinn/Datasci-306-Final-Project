@@ -201,7 +201,7 @@ smoking_all |>
     title = "Cigarette Use Prevalence Percentage Over Time (Reference Groups)"
   )
 
-#This graph highlights the differences in cigarette use prevalence over different age groups. For every group other than ages 65 and older, cigarette use decreased significantly from 2011-2023. Specifically, it decreased most sharply for those ages 18-24, with the trend becoming less steep for each increasing age group. Although age 65 and older had a low rate to begin with, their cigarette use prevalence appeared to stay level around8% throughout the entire time period covered. These trends suggests that overall, cigarette use prevalence is decreasing each year, and the younger the age group, the larger decrease we can expect.
+#This graph highlights the differences in cigarette use prevalence over different age groups. For every group other than ages 65 and older, cigarette use decreased significantly from 2011-2023. Specifically, it decreased most sharply for those ages 18-24, with the trend becoming less steep for each increasing age group. Although age 65 and older had a low rate to begin with, their cigarette use prevalence appeared to stay level around 8% throughout the entire time period covered. These trends suggests that overall, cigarette use prevalence is decreasing each year, and the younger the age group, the larger decrease we can expect.
 ```
 
 ```{r}

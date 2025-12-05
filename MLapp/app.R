@@ -14,7 +14,6 @@ library(dplyr)
 library(tidyr)
 
 ### ---- PREPARE DATA & MODEL ----
-# Assuming smoking_all is already loaded in the environment
 # Model: Predict prevalence (%) by Year + Age reference group
 
 model_data <- smoking_all %>%
@@ -109,3 +108,11 @@ server <- function(input, output) {
 
 ### ---- Run App ----
 shinyApp(ui = ui, server = server)
+
+#We chose to use Age and Year for our predictors. Looking at the visualizations we made,
+#we noticed a strong trend between each age group, year, and average cigarette use prevalence.
+#Specifically, we noticed that each group appeared to decrease at a different rate, with younger 
+#groups decreasing at a steeper rate. We wanted to create a model to predict cigarette use 
+#prevalence for a given age group, which will be chosen by the user. Our model allows the user to
+#choose an age range and year, and it will predict the given cigarette use prevalence for that
+#group in that year.
