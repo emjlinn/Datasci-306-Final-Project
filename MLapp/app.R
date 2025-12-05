@@ -7,6 +7,7 @@
 #    https://shiny.posit.co/
 #
 
+# make sure to install: install.packages("shiny")
 library(shiny)
 
 # Define UI for application that draws a histogram
