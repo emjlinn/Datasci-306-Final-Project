@@ -584,6 +584,7 @@ ggplot(corr_long, aes(x = Var1, y = Var2, fill = Correlation)) +
     axis.text.x = element_text(angle = 45, hjust = 1, face = "bold"),
     axis.text.y = element_text(face = "bold")
   )
+##Looking at the graph, we can see that there is a low correlation between age and all factors. Additionally, there is a strong correlation between mental health, income, employment, and race and ethnicity. Strongest correlation between employment and mental health.
 
 ```
 
