@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #
 # This is a Shiny web application. You can run the application by clicking
 # the 'Run App' button above.
@@ -14,8 +13,7 @@ install.packages("fastmap")
 install.packages(shiny)
 
 # make sure to install: install.packages("shiny")
-=======
->>>>>>> 30e087b2f65aea46735c0f216ca59a626c499230
+
 library(shiny)
 library(dplyr)
 
